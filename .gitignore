@@ -1,7 +1,6 @@
 # Ignore data and log files
 data/
 debug/
-logs/
 
 # Ignore OS generated files
 .DS_Store
