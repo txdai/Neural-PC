@@ -49,3 +49,4 @@ for img_target, name in dataset:
     img_target = torch.clamp(img_target, 0, 1)
     img_target = TF.to_pil_image(img_target)
     img_target.save(name)
+    print(name)
