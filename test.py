@@ -97,12 +97,12 @@ def tensor_to_polygons(array, threshold=0.5):
     return polygons
 
 def run_test(dosage, device, latent_size, patch_size, overlap, input_size):
-    root_dir = get_largest_dir_number(dosage,"./runs")
-    model_name = get_largest_model_number(f"./runs/{root_dir}","backward")
+    root_dir = get_largest_dir_number(dosage,"./logs")
+    model_name = get_largest_model_number(f"./logs/{root_dir}","backward")
     
     vae = VAE(input_shape=patch_size*patch_size, latent_dim=latent_size).to(device)
     model = ConvAE(latent_size=latent_size, encoder=vae.encoder, decoder=vae.decoder, patch_size=patch_size, overlap=overlap, input_size=input_size).to(device)
-    model.load_state_dict(torch.load(f"./runs/{root_dir}/{model_name}", map_location=device))
+    model.load_state_dict(torch.load(f"./logs/{root_dir}/{model_name}", map_location=device))
 
     image_list = os.listdir("./data/data")
 

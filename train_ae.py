@@ -122,7 +122,7 @@ if __name__ == "__main__":
     import datetime
 
     path = "./data/dosage1/GDS"
-    root_dir = f"runs/ae_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    root_dir = f"logs/ae_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
     patch_size = 24
     latent_dim = 32
     if torch.backends.mps.is_available():

@@ -21,7 +21,7 @@ else:
 flag_train_ae = False
 
 if flag_train_ae:
-    root_dir = f"runs/ae_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    root_dir = f"logs/ae_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
     os.mkdir(root_dir)
     paths = ["./data/dosage1/SEM", "./data/dosage2/SEM", "./data/dosage3/SEM", "./data/dosage1/GDS", "./data/dosage2/GDS", "./data/dosage3/GDS", "./data/data"]
     writer = SummaryWriter(root_dir)
@@ -38,8 +38,8 @@ if flag_train_ae:
     writer.close()
 else:
     ae_model = VAE(input_shape=patch_size * patch_size, latent_dim=latent_dim).to(device)
-    root_dir = get_largest_ae_number("./runs")
-    root_dir = "runs/" + root_dir
+    root_dir = get_largest_ae_number("./logs")
+    root_dir = "logs/" + root_dir
     ae_model_name = get_largest_model_number(f"./{root_dir}", "ae")
     ae_model.load_state_dict(torch.load(f"./{root_dir}/{ae_model_name}", map_location=device))
     print(f"Loaded model {ae_model_name} from {root_dir}")
@@ -53,7 +53,7 @@ for dosage in [1,2,3]:
     ae_model = VAE(input_shape=patch_size * patch_size, latent_dim=latent_dim).to(device)
     ae_model.load_state_dict(torch.load(f"./{root_dir}/{ae_model_name}", map_location=device))
 
-    log_dir = f"runs/dose{dosage}_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    log_dir = f"logs/dose{dosage}_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
     os.mkdir(log_dir)
     writer = SummaryWriter(log_dir)
 
