@@ -7,7 +7,7 @@ import torchvision.transforms.functional as TF
 from PIL import Image
 
 
-class SEMAutoencoderDataset(data.Dataset):
+class RawDataset(data.Dataset):
     def __init__(
         self,
         path_input,
@@ -42,7 +42,7 @@ class SEMAutoencoderDataset(data.Dataset):
 path_input = ["./data/dosage1/SEM", "./data/dosage2/SEM", "./data/dosage3/SEM"]
 path_target = ["./data/dosage1/GDS", "./data/dosage2/GDS", "./data/dosage3/GDS"]
 img_list = [os.listdir(path) for path in path_input]
-dataset = SEMAutoencoderDataset(path_input, path_target, img_list)
+dataset = RawDataset(path_input, path_target, img_list)
 
 for img_target, name in dataset:
     # clamp to 0 and 1, and save the torch tensor as PNG image
