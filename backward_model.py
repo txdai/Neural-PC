@@ -130,7 +130,7 @@ class ConvAE(nn.Module):
 
 class ConvSDF(nn.Module):
     def __init__(self, input_size=512):
-        super(ConvAE, self).__init__()
+        super(ConvSDF, self).__init__()
         self.unet = UNet(1, 1)
         self.level = nn.parameter.Parameter(torch.tensor(10.0))
         self.scale = nn.parameter.Parameter(torch.tensor(1.0))
