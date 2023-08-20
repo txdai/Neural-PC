@@ -160,7 +160,6 @@ def run_backward(
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
-    model.freeze_encoder_decoder()
     optimizer = optim.Adam(model.parameters(), lr=2e-4)
     print("Training SDF")
 
