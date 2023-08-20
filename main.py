@@ -28,7 +28,7 @@ for dosage in [1, 2, 3]:
         device,
         input_size=input_size,
         log_dir=log_dir,
-        num_epochs=50,
+        num_epoch=50,
         writer=writer,
     )
 
