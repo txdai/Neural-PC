@@ -5,9 +5,8 @@ import csv
 import numpy as np
 import torch
 import torch.utils.data as data
-from dataset import SEMTestDataset, SEMBackwardDataset
-from backward_model import ConvAE
-from vae_model import VAE
+from dataset import SEMTestDataset, SEMBackwardDatasetOld
+from backward_model import ConvSDF
 from tqdm import tqdm
 
 
@@ -16,9 +15,9 @@ def get_largest_model_number(dir_path, model_type):
     model_file = ""
     for filename in os.listdir(dir_path):
         if model_type == "backward":
-            match = re.match(r'model_ae_(\d+).pth', filename)
+            match = re.match(r"model_ae_(\d+).pth", filename)
         elif model_type == "ae":
-            match = re.match(r'ae_model_(\d+).pth', filename)
+            match = re.match(r"ae_model_(\d+).pth", filename)
         if match:
             num = int(match.group(1))
             if num > max_num:
@@ -26,11 +25,12 @@ def get_largest_model_number(dir_path, model_type):
                 model_file = filename
     return model_file
 
+
 def get_largest_dir_number(dosage, root_path):
     max_num = 0
     directory = ""
     for filename in os.listdir(root_path):
-        match = re.match(r'dose{}_(\d+)-(\d+)'.format(dosage), filename)
+        match = re.match(r"dose{}_(\d+)-(\d+)".format(dosage), filename)
         if match:
             num = int(match.group(1)) + int(match.group(2))
             if num > max_num:
@@ -38,17 +38,19 @@ def get_largest_dir_number(dosage, root_path):
                 directory = filename
     return directory
 
+
 def get_largest_ae_number(root_path):
     max_num = 0
     directory = ""
     for filename in os.listdir(root_path):
-        match = re.match(r'ae_(\d+)-(\d+)', filename)
+        match = re.match(r"ae_(\d+)-(\d+)", filename)
         if match:
             num = int(match.group(1)) + int(match.group(2))
             if num > max_num:
                 max_num = num
                 directory = filename
     return directory
+
 
 def test(model, dataloader, log_dir, device, input_size):
     model.eval()
@@ -62,12 +64,13 @@ def test(model, dataloader, log_dir, device, input_size):
             outputs = outputs[:, :, padding:-padding, padding:-padding]
             np.save(log_dir + filename[0], outputs.squeeze().detach().cpu().numpy())
             polygons = tensor_to_polygons(outputs.squeeze().detach().cpu().numpy())
-            with open(log_dir + filename[0][:-4] + ".csv", 'w', newline='') as csvfile:
+            with open(log_dir + filename[0][:-4] + ".csv", "w", newline="") as csvfile:
                 writer = csv.writer(csvfile)
                 for polygon in polygons:
                     if len(polygon) > 2:
                         writer.writerow([coord for point in polygon for coord in point])
     return
+
 
 def test_loss(model, dataloader, device):
     model.eval()
@@ -84,11 +87,12 @@ def test_loss(model, dataloader, device):
             mask = outputs > 0.5
             outputs = mask.float().to(device)
             loss = criterion(outputs, targets)
-            
+
             raw_loss += orig_loss.item()
             running_loss += loss.item()
 
     return running_loss / len(dataloader), raw_loss / len(dataloader)
+
 
 def tensor_to_polygons(array, threshold=0.5):
     _, thresh = cv2.threshold(array, threshold, 255, cv2.THRESH_BINARY)
@@ -96,12 +100,12 @@ def tensor_to_polygons(array, threshold=0.5):
     polygons = [contour.squeeze().tolist() for contour in contours]
     return polygons
 
-def run_test(dosage, device, latent_size, patch_size, overlap, input_size):
-    root_dir = get_largest_dir_number(dosage,"./logs")
-    model_name = get_largest_model_number(f"./logs/{root_dir}","backward")
-    
-    vae = VAE(input_shape=patch_size*patch_size, latent_dim=latent_size).to(device)
-    model = ConvAE(latent_size=latent_size, encoder=vae.encoder, decoder=vae.decoder, patch_size=patch_size, overlap=overlap, input_size=input_size).to(device)
+
+def run_test(dosage, device, input_size):
+    root_dir = get_largest_dir_number(dosage, "./logs")
+    model_name = get_largest_model_number(f"./logs/{root_dir}", "backward")
+
+    model = ConvSDF(input_size=input_size).to(device)
     model.load_state_dict(torch.load(f"./logs/{root_dir}/{model_name}", map_location=device))
 
     image_list = os.listdir("./data/data")
@@ -113,19 +117,18 @@ def run_test(dosage, device, latent_size, patch_size, overlap, input_size):
 
     test_loader = data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0)
     test(model, test_loader, f"./data/corrected_dosage{dosage}/", device, input_size)
-    
+
     path_input = f"./data/dosage{dosage}/SEM"
     path_target = f"./data/dosage{dosage}/GDS"
-    test_list = os.listdir(path_input)
-    test_loss_dataset = SEMBackwardDataset(path_input, path_target, test_list, train=False, input_size=input_size)
+    test_list = [f for f in os.listdir(path_input) if f.endswith(".tif")]
+    test_loss_dataset = SEMBackwardDatasetOld(path_input, path_target, test_list, train=False, input_size=input_size)
     test_loss_loader = data.DataLoader(test_loss_dataset, batch_size=8, shuffle=True, num_workers=0)
-    
+
     testing_loss, raw_test_loss = test_loss(model, test_loss_loader, device)
     print(f"Binarized Test loss: {testing_loss}, Raw test loss: {raw_test_loss}")
 
+
 if __name__ == "__main__":
-    patch_size = 16
-    latent_dim = 16
     if torch.backends.mps.is_available():
         device = torch.device("mps")
     elif torch.cuda.is_available():
@@ -133,4 +136,4 @@ if __name__ == "__main__":
     else:
         device = torch.device("cpu")
 
-    run_test(1, device, latent_dim, patch_size, 8, 520)
+    run_test(1, device, 512)
