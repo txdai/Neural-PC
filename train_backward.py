@@ -136,7 +136,7 @@ def run_backward(
     writer=None,
 ):
     batch_size = 8
-    image_list = [f for f in os.listdir(path_input) if f.endswith(".tif")]
+    image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
     sdf_list = [f for f in os.listdir(path_input) if f.endswith(".npy")]
     print(f"Number of images: {len(image_list)}")
 

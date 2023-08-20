@@ -120,7 +120,7 @@ def run_test(dosage, device, input_size):
 
     path_input = f"./data/dosage{dosage}/SEM"
     path_target = f"./data/dosage{dosage}/GDS"
-    test_list = [f for f in os.listdir(path_input) if f.endswith(".tif")]
+    test_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
     test_loss_dataset = SEMBackwardDatasetOld(path_input, path_target, test_list, train=False, input_size=input_size)
     test_loss_loader = data.DataLoader(test_loss_dataset, batch_size=8, shuffle=True, num_workers=0)
 

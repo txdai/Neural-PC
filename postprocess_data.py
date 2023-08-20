@@ -52,9 +52,9 @@ class SDFDataset(data.Dataset):
         self.input_names = []
         self.target_names = []
         for path, img_list in zip(self.path_input, self.image_list):
-            self.input_names.extend([os.path.join(path, img_name) for img_name in img_list])
+            self.input_names.extend([os.path.join(path, img_name) for img_name in img_list if img_name.endswith(".png")])
         for path, img_list in zip(self.path_target, self.image_list):
-            self.target_names.extend([os.path.join(path, img_name) for img_name in img_list])
+            self.target_names.extend([os.path.join(path, img_name) for img_name in img_list if img_name.endswith(".png")])
 
     def __getitem__(self, index):
         img_input = Image.open(self.input_names[index])
