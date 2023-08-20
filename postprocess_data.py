@@ -57,7 +57,7 @@ class SDFDataset(data.Dataset):
             self.target_names.extend([os.path.join(path, img_name) for img_name in img_list])
 
     def __getitem__(self, index):
-        img_input = Image.open(self.image_names[index])
+        img_input = Image.open(self.input_names[index])
         img_target = Image.open(self.target_names[index])
         img_input = TF.to_tensor(img_input)
         img_target = TF.to_tensor(img_target)
