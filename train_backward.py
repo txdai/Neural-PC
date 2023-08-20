@@ -139,10 +139,8 @@ def run_backward(
     image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
     print(f"Number of images: {len(image_list)}")
 
-    # Shuffle the image and sdf lists with the same ordering
-    combined = list(zip(image_list, sdf_list))
-    random.shuffle(combined)
-    image_list, sdf_list = zip(*combined)
+    # Shuffle the image lists
+    random.shuffle(image_list)
 
     train_list = image_list[: int(len(image_list) * 0.8)]
     val_list = image_list[int(len(image_list) * 0.8) : int(len(image_list) * 0.9)]
