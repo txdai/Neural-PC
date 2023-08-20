@@ -25,7 +25,7 @@ class RawDataset(data.Dataset):
             self.target_names.extend([os.path.join(path, img_name) for img_name in img_list])
 
     def __getitem__(self, index):
-        img_input = Image.open(self.image_names[index])
+        img_input = Image.open(self.input_names[index])
         img_target = Image.open(self.target_names[index])
         img_input = TF.to_tensor(img_input)
         img_target = TF.to_tensor(img_target)
@@ -90,3 +90,4 @@ for img_input, img_target, input_name, target_name in dataset:
     target_name = os.path.splitext(target_name)[0]
     np.save(input_name + ".npy", img_input)
     np.save(target_name + ".npy", img_target)
+    print(f"Saved {input_name}.npy and {target_name}.npy")
