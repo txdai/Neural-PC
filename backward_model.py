@@ -31,11 +31,11 @@ class UNet(nn.Module):
 
         self.pool = nn.MaxPool2d(2, 2)
 
-        self.middle = ConvBlock(256, 256)
+        self.middle = ConvBlock(256, 512)
 
         self.decoder = nn.ModuleList(
             [
-                ConvBlock(256, 256),
+                ConvBlock(512, 256),
                 ConvBlock(256, 128),
                 ConvBlock(128, 64),
             ]
