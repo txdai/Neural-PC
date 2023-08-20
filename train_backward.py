@@ -16,6 +16,7 @@ def criterion(output_sdf, target_sdf, output_img, target_img):
     sdf_loss = nn.MSELoss()(output_sdf, target_sdf)
 
     # Image Loss, pixel-wise cross entropy
+    output_img = torch.clamp(output_img, 0, 1)
     img_loss = nn.BCELoss()(output_img, target_img)
 
     # Total Loss
