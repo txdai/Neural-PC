@@ -140,8 +140,8 @@ class SEMBackwardDataset(data.Dataset):
             self.get_random_crop_coords(width, height)
         img_input = TF.to_tensor(self.crop(img_input))
         img_target = TF.to_tensor(self.crop(img_target))
-        sdf_input = distance_transform_edt(binarize(img_input)).float()
-        sdf_target = distance_transform_edt(binarize(img_target)).float()
+        sdf_input = compute_signed_distance(binarize(img_input)).float()
+        sdf_target = compute_signed_distance(binarize(img_target)).float()
         return img_input, img_target, sdf_input, sdf_target
 
     def __len__(self):
