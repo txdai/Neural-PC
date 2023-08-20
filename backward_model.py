@@ -43,7 +43,7 @@ class UNet(nn.Module):
 
         self.upconv = nn.ModuleList(
             [
-                nn.ConvTranspose2d(256, 256, kernel_size=2, stride=2),
+                nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2),
                 nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2),
                 nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
             ]
