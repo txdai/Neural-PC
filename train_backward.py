@@ -137,7 +137,6 @@ def run_backward(
 ):
     batch_size = 8
     image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
-    sdf_list = [f for f in os.listdir(path_input) if f.endswith(".npy")]
     print(f"Number of images: {len(image_list)}")
 
     # Shuffle the image and sdf lists with the same ordering
@@ -149,13 +148,9 @@ def run_backward(
     val_list = image_list[int(len(image_list) * 0.8) : int(len(image_list) * 0.9)]
     test_list = image_list[int(len(image_list) * 0.9) :]
 
-    train_list_sdf = sdf_list[: int(len(sdf_list) * 0.8)]
-    val_list_sdf = sdf_list[int(len(sdf_list) * 0.8) : int(len(sdf_list) * 0.9)]
-    test_list_sdf = sdf_list[int(len(sdf_list) * 0.9) :]
-
-    train_dataset = SEMBackwardDataset(path_input, path_target, train_list, train_list_sdf, train=True, input_size=input_size)
-    val_dataset = SEMBackwardDataset(path_input, path_target, val_list, val_list_sdf, train=False, input_size=input_size)
-    test_dataset = SEMBackwardDataset(path_input, path_target, test_list, test_list_sdf, train=False, input_size=input_size)
+    train_dataset = SEMBackwardDataset(path_input, path_target, train_list, train=True, input_size=input_size)
+    val_dataset = SEMBackwardDataset(path_input, path_target, val_list, train=False, input_size=input_size)
+    test_dataset = SEMBackwardDataset(path_input, path_target, test_list, train=False, input_size=input_size)
 
     train_loader = data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     val_loader = data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)

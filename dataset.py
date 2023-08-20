@@ -103,14 +103,12 @@ class SEMBackwardDataset(data.Dataset):
         path_input,
         path_target,
         image_list,
-        sdf_list,
         input_size=512,
         train=True,
     ):
         self.path_input = path_input
         self.path_target = path_target
         self.image_list = image_list
-        self.sdf_list = sdf_list
         self.input_size = input_size
         self.train = train
         if train:
@@ -134,19 +132,16 @@ class SEMBackwardDataset(data.Dataset):
 
     def __getitem__(self, index):
         img_name = self.image_list[index]
-        sdf_name = self.sdf_list[index]
         img_input = Image.open(os.path.join(self.path_input, img_name))
         img_target = Image.open(os.path.join(self.path_target, img_name))
-        sdf_input = np.load(os.path.join(self.path_input, sdf_name))
-        sdf_target = np.load(os.path.join(self.path_target, sdf_name))
 
         if self.train:
             width, height = img_input.size
             self.get_random_crop_coords(width, height)
         img_input = TF.to_tensor(self.crop(img_input))
         img_target = TF.to_tensor(self.crop(img_target))
-        sdf_input = self.crop(TF.to_tensor(sdf_input))
-        sdf_target = self.crop(TF.to_tensor(sdf_target))
+        sdf_input = distance_transform_edt(binarize(self.crop(TF.to_tensor(sdf_input))))
+        sdf_target = distance_transform_edt(binarize(self.crop(TF.to_tensor(sdf_target))))
         return img_input, img_target, sdf_input, sdf_target
 
     def __len__(self):
