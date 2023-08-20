@@ -6,7 +6,7 @@ import torch.optim as optim
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from dataset import SEMBackwardDataset
-from backward_model import ConvAE
+from backward_model import ConvSDF
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 

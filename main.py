@@ -32,6 +32,6 @@ for dosage in [1, 2, 3]:
         writer=writer,
     )
 
-    run_test(dosage, device, latent_dim, patch_size, overlap=overlap, input_size=input_size)
+    run_test(dosage, device, input_size=input_size)
 
     writer.close()
