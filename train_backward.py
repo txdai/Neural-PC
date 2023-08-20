@@ -157,6 +157,9 @@ def run_backward(
     model = ConvSDF(input_size=input_size)
     model.to(device)
 
+    # For debugging
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
