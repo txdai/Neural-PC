@@ -36,6 +36,7 @@ for dosage in [1, 2, 3]:
         log_dir=log_dir,
         num_epoch=50,
         writer=writer,
+        after_epoch=after_epoch,
     )
 
     run_test(dosage, device, input_size=input_size)
