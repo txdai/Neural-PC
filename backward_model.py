@@ -133,7 +133,7 @@ class ConvSDF(nn.Module):
         super(ConvSDF, self).__init__()
         self.unet = UNet(1, 1)
         self.level = nn.parameter.Parameter(torch.tensor(10.0))
-        self.scale = nn.parameter.Parameter(torch.tensor(0.1))
+        self.scale = nn.parameter.Parameter(torch.tensor(0.2))
         self.input_size = input_size
         self.relu = nn.LeakyReLU(0.02)
 
