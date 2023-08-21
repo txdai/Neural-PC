@@ -8,6 +8,9 @@ from test import run_test
 # For debugging
 # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
+def after_epoch():
+    os.system('./update.sh')
+
 input_size = 512
 if torch.backends.mps.is_available():
     device = torch.device("mps")
