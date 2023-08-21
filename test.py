@@ -15,7 +15,7 @@ def get_largest_model_number(dir_path, model_type):
     model_file = ""
     for filename in os.listdir(dir_path):
         if model_type == "backward":
-            match = re.match(r"model_ae_(\d+).pth", filename)
+            match = re.match(r"model_(\d+).pth", filename)
         elif model_type == "ae":
             match = re.match(r"ae_model_(\d+).pth", filename)
         if match:

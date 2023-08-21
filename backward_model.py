@@ -141,7 +141,7 @@ class ConvSDF(nn.Module):
         return self.unet(x)
 
     def sdf2img(self, sdf):
-        return torch.tanh(self.relu((sdf - self.level) * self.scale))
+        return torch.tanh(self.relu((-sdf - self.level) * self.scale))
 
     def forward(self, x):
         x = compute_signed_distance(binarize(x)).float()

@@ -172,7 +172,7 @@ def run_backward(
             best_loss = val_loss
             torch.save(model.state_dict(), f"{log_dir}/model_fixed_{epoch}.pth")
             best_model = model
-            best_model_name = f"model_fixed_{epoch}.pth"
+            best_model_name = f"model_{epoch}.pth"
 
         print(f"Epoch {epoch+1}/{num_epoch}, Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
 

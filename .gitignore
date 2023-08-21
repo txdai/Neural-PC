@@ -4,6 +4,7 @@ debug/
 
 # Ignore checkpoints
 *.pth
+output*
 
 # Ignore OS generated files
 .DS_Store
