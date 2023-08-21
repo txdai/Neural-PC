@@ -135,6 +135,7 @@ def run_backward(
     log_dir,
     num_epoch=30,
     writer=None,
+    after_epoch=None,
 ):
     batch_size = 8
     image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
@@ -175,6 +176,9 @@ def run_backward(
             best_model_name = f"model_{epoch}.pth"
 
         print(f"Epoch {epoch+1}/{num_epoch}, Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+        
+        if after_epoch!=None:
+            after_epoch()
 
     # Testing
     test_loss = test(model, test_loader, criterion, device)
