@@ -6,7 +6,7 @@ from train_backward import run_backward
 from test import run_test
 
 # For debugging
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+# os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
 input_size = 512
 if torch.backends.mps.is_available():
