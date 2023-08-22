@@ -129,13 +129,14 @@ class ConvAE(nn.Module):
 
 
 class ConvSDF(nn.Module):
-    def __init__(self, input_size=512):
+    def __init__(self, input_size=512, device=torch.device("cuda")):
         super(ConvSDF, self).__init__()
         self.unet = UNet(1, 1)
         self.level = nn.parameter.Parameter(torch.tensor(10.0))
         self.scale = nn.parameter.Parameter(torch.tensor(0.2))
         self.input_size = input_size
         self.relu = nn.LeakyReLU(0.02)
+        self.device = device
 
     def forward_conv(self, x):
         return self.unet(x)
@@ -144,7 +145,9 @@ class ConvSDF(nn.Module):
         return torch.tanh(self.relu((-sdf - self.level) * self.scale))
 
     def forward(self, x):
+        x = x.cpu()
         x = compute_signed_distance(binarize(x)).float()
+        x = x.to(self.device)
         sdf = self.forward_conv(x)
         out = self.sdf2img(sdf)
         return out

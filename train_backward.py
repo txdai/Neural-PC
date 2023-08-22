@@ -156,13 +156,13 @@ def run_backward(
     val_loader = data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     test_loader = data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    model = ConvSDF(input_size=input_size)
+    model = ConvSDF(input_size=input_size, device=device)
     model.to(device)
 
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
-    optimizer = optim.Adam(model.parameters(), lr=2e-4)
+    optimizer = optim.Adam(model.parameters(), lr=2e-5)
     print("Training SDF")
 
     for epoch in range(num_epoch):
@@ -177,7 +177,7 @@ def run_backward(
 
         print(f"Epoch {epoch+1}/{num_epoch}, Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
         
-        if after_epoch!=None:
+        if after_epoch!=None and epoch % 10 == 0:
             after_epoch()
 
     # Testing
@@ -190,5 +190,8 @@ def run_backward(
     # Testing
     test_loss = test(model, test_loader, criterion, device)
     print(f"Best Test Loss: {test_loss:.4f}")
+    
+    if after_epoch!=None:
+        after_epoch()
 
     return best_model, best_model_name
