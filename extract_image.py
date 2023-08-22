@@ -4,7 +4,7 @@ from PIL import Image
 import os
 import io
 
-log_dir = "./logs/dose1_20230821-175057/"  # Change this to your TensorBoard log directory
+log_dir = "./logs/dose1_20230822-041428"  # Change this to your TensorBoard log directory
 save_dir = "../example"  # Change this to where you want to save the images
 
 if not os.path.exists(save_dir):
