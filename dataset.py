@@ -18,7 +18,7 @@ def compute_signed_distance(binary_img):
     outside = distance_transform_edt(binary_img_np == 0.0)
     inside = distance_transform_edt(binary_img_np == 1.0)
     signed_distance = outside - inside
-    return torch.from_numpy(signed_distance)
+    return torch.from_numpy(signed_distance) / 100.0
 
 
 class SEMForwardDataset(data.Dataset):
