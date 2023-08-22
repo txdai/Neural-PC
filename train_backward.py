@@ -162,7 +162,7 @@ def run_backward(
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
-    optimizer = optim.Adam(model.parameters(), lr=2e-5)
+    optimizer = optim.Adam(model.parameters(), lr=1e-5)
     print("Training SDF")
 
     for epoch in range(num_epoch):

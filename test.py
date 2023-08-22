@@ -61,7 +61,7 @@ def test(model, dataloader, log_dir, device, input_size):
             inputs = inputs.to(device)
             inputs = torch.nn.functional.pad(inputs, (padding, padding, padding, padding), mode="constant", value=0)
             outputs = model(inputs)
-            outputs = outputs[:, :, padding:-padding, padding:-padding]
+            # outputs = outputs[:, :, padding:-padding, padding:-padding]
             np.save(log_dir + filename[0], outputs.squeeze().detach().cpu().numpy())
             polygons = tensor_to_polygons(outputs.squeeze().detach().cpu().numpy())
             with open(log_dir + filename[0][:-4] + ".csv", "w", newline="") as csvfile:
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     if torch.backends.mps.is_available():
         device = torch.device("mps")
     elif torch.cuda.is_available():
-        device = torch.device("cuda:1")
+        device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
 
