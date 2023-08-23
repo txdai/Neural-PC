@@ -13,7 +13,7 @@ for dosage in [1, 2, 3]:
     log_dir = os.path.join("./logs", log_dir)
     print(f"Log directory: {log_dir}")
 
-    save_dir = "../example"  # Change this to where you want to save the images
+    save_dir = "./example"  # Change this to where you want to save the images
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -38,7 +38,7 @@ for dosage in [1, 2, 3]:
             for index, img in enumerate(images):
                 image_string = np.frombuffer(img.encoded_image_string, dtype=np.uint8)
                 image_data = Image.open(io.BytesIO(image_string))
-                image_path = f"{save_dir}/{tag}_{index}.png"  # Change this to the desired path
+                image_path = f"{save_dir}/{dosage}_{index}.png"  # Change this to the desired path
                 image_data.save(image_path)
 
                 print(f"Saved {image_path}")
