@@ -132,8 +132,8 @@ class ConvSDF(nn.Module):
     def __init__(self, input_size=512, device=torch.device("cuda")):
         super(ConvSDF, self).__init__()
         self.unet = UNet(1, 1)
-        self.level = nn.parameter.Parameter(torch.tensor(10.0))
-        self.scale = nn.parameter.Parameter(torch.tensor(0.2))
+        self.level = nn.parameter.Parameter(torch.tensor(0.1))
+        self.scale = nn.parameter.Parameter(torch.tensor(2.0))
         self.input_size = input_size
         self.relu = nn.LeakyReLU(0.02)
         self.device = device

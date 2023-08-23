@@ -5,6 +5,7 @@ debug/
 # Ignore checkpoints
 *.pth
 output*
+nohup.out
 
 # Ignore OS generated files
 .DS_Store
