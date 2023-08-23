@@ -8,7 +8,10 @@ import io
 for dosage in [1, 2, 3]:
     print(f"Extracting images for dosage {dosage}")
     log_dir = get_largest_dir_number(dosage, "./logs")
+    if log_dir == "":
+        continue
     log_dir = os.path.join("./logs", log_dir)
+    print(f"Log directory: {log_dir}")
 
     save_dir = "../example"  # Change this to where you want to save the images
 
