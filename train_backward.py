@@ -168,6 +168,7 @@ def run_backward(
     for epoch in range(num_epoch):
         train_loss = train(model, train_loader, criterion, optimizer, device, epoch, num_epoch, writer, iterations_to_log)
         val_loss = validate(model, val_loader, criterion, epoch, num_epoch, writer, device)
+        model.scale.data = model.scale.data * 1.1
 
         if val_loss < best_loss:
             best_loss = val_loss
