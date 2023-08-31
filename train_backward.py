@@ -5,24 +5,10 @@ import torch.utils.data as data
 import torch.optim as optim
 import torch.nn as nn
 import matplotlib.pyplot as plt
-from dataset import SEMBackwardDataset
-from backward_model import ConvSDF
+from utils.dataset import SEMBackwardDataset
+from models.backward_model import ConvAE, Network
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
-
-
-def criterion(output_sdf, target_sdf, output_img, target_img):
-    # SDF Loss
-    sdf_loss = nn.MSELoss()(output_sdf, target_sdf)
-
-    # Image Loss, pixel-wise cross entropy
-    output_img = torch.clamp(output_img, 0, 1)
-    img_loss = nn.BCELoss()(output_img, target_img)
-
-    # Total Loss
-    total_loss = sdf_loss + img_loss
-
-    return total_loss
 
 
 def train(model, dataloader, criterion, optimizer, device, epoch, num_epochs, writer, iterations_to_log=100):
@@ -31,16 +17,13 @@ def train(model, dataloader, criterion, optimizer, device, epoch, num_epochs, wr
     iteration_loss = 0.0
     iterations_per_epoch = len(dataloader)
     iteration = 0
-    for input_img, target_img, input_sdf, target_sdf in tqdm(dataloader, desc=f"Training Epoch {epoch+1}/{num_epochs}"):
+    for input_img, target_img in tqdm(dataloader, desc=f"Training Epoch {epoch+1}/{num_epochs}"):
         input_img = input_img.to(device)
         target_img = target_img.to(device)
-        input_sdf = input_sdf.to(device)
-        target_sdf = target_sdf.to(device)
 
         optimizer.zero_grad()
-        output_sdf = model.forward_conv(input_sdf)
-        output_img = model.sdf2img(output_sdf)
-        loss = criterion(output_sdf, target_sdf, output_img, target_img)
+        output_img = model.forward_conv(input_img)
+        loss = criterion(output_img, target_img)
         loss.backward()
         optimizer.step()
 
@@ -64,40 +47,36 @@ def validate(model, dataloader, criterion, epoch, num_epochs, writer, device):
     model.eval()
     running_loss = 0.0
     with torch.no_grad():
-        for input_img, target_img, input_sdf, target_sdf in tqdm(dataloader, desc=f"Validating Epoch {epoch+1}/{num_epochs}"):
-            input_img = input_img.to(device)
-            target_img = target_img.to(device)
-            input_sdf = input_sdf.to(device)
-            target_sdf = target_sdf.to(device)
+        for inputs, targets in tqdm(dataloader, desc=f"Validation Epoch {epoch+1}/{num_epochs}"):
+            inputs = inputs.to(device)
+            targets = targets.to(device)
 
-            output_sdf = model.forward_conv(input_sdf)
-            output_img = model.sdf2img(output_sdf)
-            loss = criterion(output_sdf, target_sdf, output_img, target_img)
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
 
             running_loss += loss.item()
 
         writer.add_scalar("Loss/val", running_loss / len(dataloader), epoch)
 
         # Visualization of validation image
-        input_img, target_img, input_sdf, target_sdf = next(iter(dataloader))
-        input_img = input_img[0].squeeze().cpu()
-        input_sdf = input_sdf.to(device)
-        output_sdf = model.forward_conv(input_sdf)
-        output_img = model.sdf2img(output_sdf)
+        inputs, targets = next(iter(dataloader))
+        input_image = inputs[0].clone().squeeze().cpu()
+        inputs = inputs.to(device)
+        outputs = model(inputs)
 
         # Select the first image from the batch
-        target_img = target_img[0].squeeze().cpu()
-        output_img = output_img[0].squeeze().cpu()
+        target_image = targets[0].squeeze().cpu()
+        output_image = outputs[0].squeeze().cpu()
 
         # Plot the target and output images
         fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(20, 5))
-        ax1.imshow(input_img.numpy(), cmap="gray")
+        ax1.imshow(input_image.numpy(), cmap="gray")
         ax1.set_title("Input Image")
-        ax2.imshow(target_img.numpy(), cmap="gray")
+        ax2.imshow(target_image.numpy(), cmap="gray")
         ax2.set_title("Target Image")
-        ax3.imshow(output_img.numpy(), cmap="gray")
+        ax3.imshow(output_image.numpy(), cmap="gray")
         ax3.set_title("Output Image")
-        ax4.imshow((torch.abs(output_img - target_img)).numpy(), cmap="gray")
+        ax4.imshow((torch.abs(output_image - target_image)).numpy(), cmap="gray")
         ax4.set_title("Absolute Difference")
         plt.tight_layout()
 
@@ -112,15 +91,13 @@ def test(model, dataloader, criterion, device):
     running_loss = 0.0
 
     with torch.no_grad():
-        for input_img, target_img, input_sdf, target_sdf in tqdm(dataloader, desc=f"Testing"):
-            input_img = input_img.to(device)
-            target_img = target_img.to(device)
-            input_sdf = input_sdf.to(device)
-            target_sdf = target_sdf.to(device)
+        for inputs, targets in tqdm(dataloader, desc="Testing"):
+            inputs = inputs.to(device)
+            targets = targets.to(device)
 
-            output_sdf = model.forward_conv(input_sdf)
-            output_img = model.sdf2img(output_sdf)
-            loss = criterion(output_sdf, target_sdf, output_img, target_img)
+            outputs = model(inputs)
+            outputs = torch.clamp(outputs, min=0.0, max=1.0)
+            loss = criterion(outputs, targets)
 
             running_loss += loss.item()
 
@@ -131,18 +108,23 @@ def run_backward(
     path_input,
     path_target,
     device,
+    vae,
+    latent_size,
+    patch_size,
+    overlap,
     input_size,
     log_dir,
     num_epoch=30,
     writer=None,
-    after_epoch=None,
 ):
     batch_size = 8
-    image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
+    image_list = [f for f in os.listdir(path_input) if f.endswith(".tif")]
     print(f"Number of images: {len(image_list)}")
 
-    # Shuffle the image lists
-    random.shuffle(image_list)
+    # Shuffle the image and sdf lists with the same ordering
+    combined = list(zip(image_list, sdf_list))
+    random.shuffle(combined)
+    image_list, sdf_list = zip(*combined)
 
     train_list = image_list[: int(len(image_list) * 0.8)]
     val_list = image_list[int(len(image_list) * 0.8) : int(len(image_list) * 0.9)]
@@ -156,19 +138,26 @@ def run_backward(
     val_loader = data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     test_loader = data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    model = ConvSDF(input_size=input_size, device=device)
-    model.to(device)
+    conv_model = Network(
+        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[4, 8, 16, 16], small_kernel=5, device=device
+    )
+    model = ConvAE(vae_model=vae, conv_model=conv_model, latent_size=latent_size, patch_size=patch_size, overlap=overlap, input_size=input_size).to(
+        device
+    )
+
+    # Loss function and optimizer
+    criterion = nn.MSELoss()
 
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
-    optimizer = optim.Adam(model.parameters(), lr=1e-5)
-    print("Training SDF")
+    model.freeze_encoder_decoder()
+    optimizer = optim.Adam(model.parameters(), lr=2e-4)
+    print("Training Model")
 
     for epoch in range(num_epoch):
         train_loss = train(model, train_loader, criterion, optimizer, device, epoch, num_epoch, writer, iterations_to_log)
         val_loss = validate(model, val_loader, criterion, epoch, num_epoch, writer, device)
-        model.scale.data = model.scale.data * 1.1
 
         if val_loss < best_loss:
             best_loss = val_loss
@@ -177,9 +166,6 @@ def run_backward(
             best_model_name = f"model_{epoch}.pth"
 
         print(f"Epoch {epoch+1}/{num_epoch}, Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
-        
-        if after_epoch!=None and epoch % 10 == 0:
-            after_epoch()
 
     # Testing
     test_loss = test(model, test_loader, criterion, device)
@@ -191,8 +177,5 @@ def run_backward(
     # Testing
     test_loss = test(model, test_loader, criterion, device)
     print(f"Best Test Loss: {test_loss:.4f}")
-    
-    if after_epoch!=None:
-        after_epoch()
 
     return best_model, best_model_name

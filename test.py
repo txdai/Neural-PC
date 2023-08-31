@@ -5,7 +5,7 @@ import csv
 import numpy as np
 import torch
 import torch.utils.data as data
-from dataset import SEMTestDataset, SEMBackwardDatasetOld
+from utils.dataset import SEMTestDataset, SEMBackwardDataset
 from backward_model import ConvSDF
 from tqdm import tqdm
 
@@ -54,12 +54,12 @@ def get_largest_ae_number(root_path):
 
 def test(model, dataloader, log_dir, device, input_size):
     model.eval()
-    padding = (input_size - 512) // 2
+    # padding = (input_size - 512) // 2
 
     with torch.no_grad():
         for inputs, filename in tqdm(dataloader, desc="Generating Corrected Samples"):
             inputs = inputs.to(device)
-            inputs = torch.nn.functional.pad(inputs, (padding, padding, padding, padding), mode="constant", value=0)
+            # inputs = torch.nn.functional.pad(inputs, (padding, padding, padding, padding), mode="constant", value=0)
             outputs = model(inputs)
             # outputs = outputs[:, :, padding:-padding, padding:-padding]
             np.save(log_dir + filename[0], outputs.squeeze().detach().cpu().numpy())
@@ -121,7 +121,7 @@ def run_test(dosage, device, input_size):
     path_input = f"./data/dosage{dosage}/SEM"
     path_target = f"./data/dosage{dosage}/GDS"
     test_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
-    test_loss_dataset = SEMBackwardDatasetOld(path_input, path_target, test_list, train=False, input_size=input_size)
+    test_loss_dataset = SEMBackwardDataset(path_input, path_target, test_list, train=False, input_size=input_size)
     test_loss_loader = data.DataLoader(test_loss_dataset, batch_size=8, shuffle=True, num_workers=0)
 
     testing_loss, raw_test_loss = test_loss(model, test_loss_loader, device)

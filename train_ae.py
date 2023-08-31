@@ -4,8 +4,8 @@ import random
 import torch.optim as optim
 from tqdm import tqdm
 import torchvision
-from dataset import SEMAutoencoderDataset
-from vae_model import VAE, vae_loss
+from utils.dataset import SEMAutoencoderDataset
+from models.vae_model import VAE, vae_loss
 import matplotlib.pyplot as plt
 
 
@@ -66,7 +66,8 @@ def validate(model, dataloader, device, writer=None, epoch=0, num_epochs=100, pa
                     # Reconstructed Images
                     grid_img_reconstr = axs[1]
                     grid_img_reconstr.imshow(
-                        torchvision.utils.make_grid(x_reconst.view(-1, 1, patch_size, patch_size), nrow=8).cpu().numpy().transpose((1, 2, 0)), cmap="gray"
+                        torchvision.utils.make_grid(x_reconst.view(-1, 1, patch_size, patch_size), nrow=8).cpu().numpy().transpose((1, 2, 0)),
+                        cmap="gray",
                     )
                     grid_img_reconstr.axis("off")
                     grid_img_reconstr.set_title("Reconstructed Images", fontsize=16)
