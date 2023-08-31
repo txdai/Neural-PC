@@ -6,13 +6,13 @@ import numpy as np
 import torch
 import torch.utils.data as data
 from utils.dataset import SEMTestDataset, SEMBackwardDataset
-from backward_model import ConvSDF
+from models.backward_model import ConvAE,Network
 from tqdm import tqdm
 
 
 def get_largest_model_number(dir_path, model_type):
     max_num = 0
-    model_file = ""
+    model_file = "model_0.pth"
     for filename in os.listdir(dir_path):
         if model_type == "backward":
             match = re.match(r"model_(\d+).pth", filename)
@@ -32,7 +32,7 @@ def get_largest_dir_number(dosage, root_path):
     for filename in os.listdir(root_path):
         match = re.match(r"dose{}_(\d+)-(\d+)".format(dosage), filename)
         if match:
-            num = int(match.group(1)) + int(match.group(2))
+            num = int(match.group(1)) * 10000000 + int(match.group(2))
             if num > max_num:
                 max_num = num
                 directory = filename
@@ -101,11 +101,17 @@ def tensor_to_polygons(array, threshold=0.5):
     return polygons
 
 
-def run_test(dosage, device, input_size):
+def run_test(dosage, device, input_size, latent_size=16, patch_size=16, overlap=8, vae=None):
     root_dir = get_largest_dir_number(dosage, "./logs")
     model_name = get_largest_model_number(f"./logs/{root_dir}", "backward")
 
-    model = ConvSDF(input_size=input_size).to(device)
+    conv_model = Network(
+        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[8, 8, 16, 16], small_kernel=5, device=device
+    )
+    model = ConvAE(vae_model=vae, conv_model=conv_model, latent_size=latent_size, patch_size=patch_size, overlap=overlap, input_size=input_size).to(
+        device
+    )
+
     model.load_state_dict(torch.load(f"./logs/{root_dir}/{model_name}", map_location=device))
 
     image_list = os.listdir("./data/data")

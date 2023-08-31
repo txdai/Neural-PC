@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from layers import large_kernel_block, conv_bn_relu
+from models.layers import large_kernel_block, conv_bn_relu
 
 
 class Network(nn.Module):
@@ -19,6 +19,11 @@ class Network(nn.Module):
         super().__init__()
         self.num_stages = len(layers)
         self.input_size = input_size
+        self.stem = nn.ModuleList([
+            conv_bn_relu(in_channels=1, out_channels=channels[0], kernel_size=3, stride=1, padding=1, groups=1),
+            conv_bn_relu(in_channels=channels[0], out_channels=channels[0], kernel_size=3, stride=1, padding=1, groups=channels[0]),
+            conv_bn_relu(in_channels=channels[0], out_channels=channels[0], kernel_size=1, stride=1, padding=0, groups=1),
+            conv_bn_relu(in_channels=channels[0], out_channels=channels[0], kernel_size=3, stride=1, padding=1, groups=channels[0])])
 
         self.stages = nn.ModuleList()
         self.transitions = nn.ModuleList()
@@ -42,6 +47,9 @@ class Network(nn.Module):
         self.to(self.device)
 
     def forward(self, x):
+        for stem_layer in self.stem:
+            x = stem_layer(x)
+                
         for stage_idx in range(self.num_stages):
             x = self.stages[stage_idx](x)
             if stage_idx < self.num_stages - 1:

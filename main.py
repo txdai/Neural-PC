@@ -5,6 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 from train_backward import run_backward
 from train_ae import run_ae
 from models.vae_model import VAE
+from utils.extract_image import extract_img
 from test import get_largest_model_number, get_largest_ae_number, run_test
 
 # For debugging
@@ -79,16 +80,15 @@ for dosage in [1, 2, 3]:
         device,
         input_size=input_size,
         log_dir=log_dir,
-        num_epochs_fixed=80,
-        num_epochs_ae=50,
+        num_epoch=50,
         latent_size=latent_dim,
-        encoder=ae_model.encoder,
-        decoder=ae_model.decoder,
+        vae=ae_model,
         patch_size=patch_size,
         overlap=overlap,
         writer=writer,
     )
 
-    run_test(dosage, device, latent_dim, patch_size, overlap=overlap, input_size=input_size)
-
+    run_test(dosage, device, input_size, latent_dim, patch_size, overlap=overlap, vae=VAE(input_shape=patch_size * patch_size, latent_dim=latent_dim))
+    extract_img(dosage)
+    after_epoch()
     writer.close()

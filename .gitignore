@@ -1,10 +1,10 @@
 # Ignore data and log files
 data/
 debug/
+example/
 
 # Ignore checkpoints
 *.pth
-output*
 nohup.out
 
 # Ignore OS generated files

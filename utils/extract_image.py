@@ -5,11 +5,9 @@ from test import get_largest_dir_number
 import os
 import io
 
-for dosage in [1, 2, 3]:
+def extract_img(dosage):
     print(f"Extracting images for dosage {dosage}")
     log_dir = get_largest_dir_number(dosage, "./logs")
-    if log_dir == "":
-        continue
     log_dir = os.path.join("./logs", log_dir)
     print(f"Log directory: {log_dir}")
 

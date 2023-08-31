@@ -22,7 +22,7 @@ def train(model, dataloader, criterion, optimizer, device, epoch, num_epochs, wr
         target_img = target_img.to(device)
 
         optimizer.zero_grad()
-        output_img = model.forward_conv(input_img)
+        output_img = model(input_img)
         loss = criterion(output_img, target_img)
         loss.backward()
         optimizer.step()
@@ -118,13 +118,11 @@ def run_backward(
     writer=None,
 ):
     batch_size = 8
-    image_list = [f for f in os.listdir(path_input) if f.endswith(".tif")]
+    image_list = [f for f in os.listdir(path_input) if f.endswith(".png")]
     print(f"Number of images: {len(image_list)}")
 
-    # Shuffle the image and sdf lists with the same ordering
-    combined = list(zip(image_list, sdf_list))
-    random.shuffle(combined)
-    image_list, sdf_list = zip(*combined)
+    # Shuffle the image lists with the same ordering
+    random.shuffle(image_list)
 
     train_list = image_list[: int(len(image_list) * 0.8)]
     val_list = image_list[int(len(image_list) * 0.8) : int(len(image_list) * 0.9)]
@@ -139,7 +137,7 @@ def run_backward(
     test_loader = data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     conv_model = Network(
-        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[4, 8, 16, 16], small_kernel=5, device=device
+        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[8, 8, 16, 16], small_kernel=5, device=device
     )
     model = ConvAE(vae_model=vae, conv_model=conv_model, latent_size=latent_size, patch_size=patch_size, overlap=overlap, input_size=input_size).to(
         device
@@ -151,7 +149,6 @@ def run_backward(
     # Training loop with fixed ae
     best_loss = float("inf")
     iterations_to_log = 1  # Save training loss every 10 iterations
-    model.freeze_encoder_decoder()
     optimizer = optim.Adam(model.parameters(), lr=2e-4)
     print("Training Model")
 
