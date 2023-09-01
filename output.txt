@@ -166,3 +166,114 @@ Epoch 49/50, Train Loss: 0.0200, Validation Loss: 0.0250
 Epoch 50/50, Train Loss: 0.0201, Validation Loss: 0.0235
 Test Loss: 0.0230
 Best Test Loss: 0.0203
+[master 1a3d8f0] Log files for training run at Thu 31 Aug 2023 11:10:26 PM PDT
+ 2 files changed, 112 insertions(+)
+ create mode 100644 logs/dose2_20230831-185748/events.out.tfevents.1693533468.user-B7109F77DV14HR-2T-N.988025.1
+Binarized Test loss: 0.027180069830359484, Raw test loss: 0.033832559555132945
+Extracting images for dosage 2
+Log directory: ./logs/dose2_20230831-185748
+Saved ./example/2_0.png
+Saved ./example/2_1.png
+Saved ./example/2_2.png
+Saved ./example/2_3.png
+Saved ./example/2_4.png
+Saved ./example/2_5.png
+Saved ./example/2_6.png
+Saved ./example/2_7.png
+Saved ./example/2_8.png
+Saved ./example/2_9.png
+Saved ./example/2_10.png
+Saved ./example/2_11.png
+Saved ./example/2_12.png
+Saved ./example/2_13.png
+Saved ./example/2_14.png
+Saved ./example/2_15.png
+Saved ./example/2_16.png
+Saved ./example/2_17.png
+Saved ./example/2_18.png
+Saved ./example/2_19.png
+Saved ./example/2_20.png
+Saved ./example/2_21.png
+Saved ./example/2_22.png
+Saved ./example/2_23.png
+Saved ./example/2_24.png
+Saved ./example/2_25.png
+Saved ./example/2_26.png
+Saved ./example/2_27.png
+Saved ./example/2_28.png
+Saved ./example/2_29.png
+Saved ./example/2_30.png
+Saved ./example/2_31.png
+Saved ./example/2_32.png
+Saved ./example/2_33.png
+Saved ./example/2_34.png
+Saved ./example/2_35.png
+Saved ./example/2_36.png
+Saved ./example/2_37.png
+Saved ./example/2_38.png
+Saved ./example/2_39.png
+Saved ./example/2_40.png
+Saved ./example/2_41.png
+Saved ./example/2_42.png
+Saved ./example/2_43.png
+Saved ./example/2_44.png
+Saved ./example/2_45.png
+Saved ./example/2_46.png
+Saved ./example/2_47.png
+Saved ./example/2_48.png
+Saved ./example/2_49.png
+Training for dosage 3
+Number of images: 789
+Training Model
+Epoch 1/50, Train Loss: 0.1330, Validation Loss: 0.0805
+Epoch 2/50, Train Loss: 0.0589, Validation Loss: 0.0577
+Epoch 3/50, Train Loss: 0.0470, Validation Loss: 0.0510
+Epoch 4/50, Train Loss: 0.0428, Validation Loss: 0.0468
+Epoch 5/50, Train Loss: 0.0408, Validation Loss: 0.0440
+Epoch 6/50, Train Loss: 0.0390, Validation Loss: 0.0439
+Epoch 7/50, Train Loss: 0.0376, Validation Loss: 0.0409
+Epoch 8/50, Train Loss: 0.0363, Validation Loss: 0.0414
+Epoch 9/50, Train Loss: 0.0356, Validation Loss: 0.0413
+Epoch 10/50, Train Loss: 0.0352, Validation Loss: 0.0407
+Epoch 11/50, Train Loss: 0.0349, Validation Loss: 0.0390
+Epoch 12/50, Train Loss: 0.0341, Validation Loss: 0.0353
+Epoch 13/50, Train Loss: 0.0340, Validation Loss: 0.0377
+Epoch 14/50, Train Loss: 0.0333, Validation Loss: 0.0347
+Epoch 15/50, Train Loss: 0.0327, Validation Loss: 0.0329
+Epoch 16/50, Train Loss: 0.0330, Validation Loss: 0.0374
+Epoch 17/50, Train Loss: 0.0331, Validation Loss: 0.0357
+Epoch 18/50, Train Loss: 0.0323, Validation Loss: 0.0344
+Epoch 19/50, Train Loss: 0.0318, Validation Loss: 0.0374
+Epoch 20/50, Train Loss: 0.0324, Validation Loss: 0.0354
+Epoch 21/50, Train Loss: 0.0318, Validation Loss: 0.0350
+Epoch 22/50, Train Loss: 0.0316, Validation Loss: 0.0348
+Epoch 23/50, Train Loss: 0.0318, Validation Loss: 0.0349
+Epoch 24/50, Train Loss: 0.0316, Validation Loss: 0.0366
+Epoch 25/50, Train Loss: 0.0312, Validation Loss: 0.0376
+Epoch 26/50, Train Loss: 0.0308, Validation Loss: 0.0335
+Epoch 27/50, Train Loss: 0.0309, Validation Loss: 0.0348
+Epoch 28/50, Train Loss: 0.0306, Validation Loss: 0.0356
+Epoch 29/50, Train Loss: 0.0312, Validation Loss: 0.0330
+Epoch 30/50, Train Loss: 0.0307, Validation Loss: 0.0366
+Epoch 31/50, Train Loss: 0.0307, Validation Loss: 0.0339
+Epoch 32/50, Train Loss: 0.0311, Validation Loss: 0.0325
+Epoch 33/50, Train Loss: 0.0304, Validation Loss: 0.0344
+Epoch 34/50, Train Loss: 0.0306, Validation Loss: 0.0290
+Epoch 35/50, Train Loss: 0.0304, Validation Loss: 0.0382
+Epoch 36/50, Train Loss: 0.0306, Validation Loss: 0.0337
+Epoch 37/50, Train Loss: 0.0302, Validation Loss: 0.0364
+Epoch 38/50, Train Loss: 0.0298, Validation Loss: 0.0346
+Epoch 39/50, Train Loss: 0.0305, Validation Loss: 0.0329
+Epoch 40/50, Train Loss: 0.0298, Validation Loss: 0.0340
+Epoch 41/50, Train Loss: 0.0301, Validation Loss: 0.0321
+Epoch 42/50, Train Loss: 0.0301, Validation Loss: 0.0362
+Epoch 43/50, Train Loss: 0.0298, Validation Loss: 0.0333
+Epoch 44/50, Train Loss: 0.0301, Validation Loss: 0.0313
+Epoch 45/50, Train Loss: 0.0299, Validation Loss: 0.0347
+Epoch 46/50, Train Loss: 0.0298, Validation Loss: 0.0313
+Epoch 47/50, Train Loss: 0.0298, Validation Loss: 0.0339
+Epoch 48/50, Train Loss: 0.0294, Validation Loss: 0.0311
+Epoch 49/50, Train Loss: 0.0300, Validation Loss: 0.0340
+Epoch 50/50, Train Loss: 0.0302, Validation Loss: 0.0382
+Test Loss: 0.0388
+Best Test Loss: 0.0300
