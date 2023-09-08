@@ -16,14 +16,14 @@ def after_epoch():
     os.system("./update.sh")
 
 
-patch_size = 16
+patch_size = 8
 latent_dim = 16
-overlap = 8
+overlap = 4
 input_size = 512
 if torch.backends.mps.is_available():
     device = torch.device("mps")
 elif torch.cuda.is_available():
-    device = torch.device("cuda")
+    device = torch.device("cuda:2")
 else:
     device = torch.device("cpu")
 
@@ -45,7 +45,7 @@ if flag_train_ae:
     ae_model, ae_model_name = run_ae(
         paths=paths,
         patch_size=patch_size,
-        patch_count=32,
+        patch_count=64,
         latent_dim=latent_dim,
         num_epochs=50,
         device=device,
@@ -69,26 +69,30 @@ for dosage in [1, 2, 3]:
 
     ae_model = VAE(input_shape=patch_size * patch_size, latent_dim=latent_dim).to(device)
     ae_model.load_state_dict(torch.load(f"./{root_dir}/{ae_model_name}", map_location=device))
-
-    log_dir = f"logs/dose{dosage}_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
-    os.mkdir(log_dir)
-    writer = SummaryWriter(log_dir)
-
-    backward_model, backward_model_name = run_backward(
-        path_input,
-        path_target,
-        device,
-        input_size=input_size,
-        log_dir=log_dir,
-        num_epoch=50,
-        latent_size=latent_dim,
-        vae=ae_model,
-        patch_size=patch_size,
-        overlap=overlap,
-        writer=writer,
-    )
+    
+    if dosage in [2,3]:
+        log_dir = f"logs/dose{dosage}_{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+        os.mkdir(log_dir)
+        writer = SummaryWriter(log_dir)
+        
+        
+        backward_model, backward_model_name = run_backward(
+            path_input,
+            path_target,
+            device,
+            input_size=input_size,
+            log_dir=log_dir,
+            num_epoch=30,
+            latent_size=latent_dim,
+            vae=ae_model,
+            patch_size=patch_size,
+            overlap=overlap,
+            writer=writer,
+        )
 
     run_test(dosage, device, input_size, latent_dim, patch_size, overlap=overlap, vae=VAE(input_shape=patch_size * patch_size, latent_dim=latent_dim))
     extract_img(dosage)
     after_epoch()
-    writer.close()
+    
+    if dosage in [2,3]:
+        writer.close()

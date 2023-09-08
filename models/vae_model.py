@@ -39,4 +39,4 @@ class VAE(nn.Module):
 def vae_loss(x, x_reconst, mu, log_var):
     reconst_loss = nn.functional.binary_cross_entropy(x_reconst, x, reduction="sum")
     kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
-    return reconst_loss + kl_div * 0.1
+    return reconst_loss + kl_div

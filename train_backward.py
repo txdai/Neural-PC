@@ -132,12 +132,12 @@ def run_backward(
     val_dataset = SEMBackwardDataset(path_input, path_target, val_list, train=False, input_size=input_size)
     test_dataset = SEMBackwardDataset(path_input, path_target, test_list, train=False, input_size=input_size)
 
-    train_loader = data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    val_loader = data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
-    test_loader = data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+    train_loader = data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    val_loader = data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    test_loader = data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     conv_model = Network(
-        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[8, 8, 16, 16], small_kernel=5, device=device
+        input_size=input_size, large_kernel_sizes=[31, 29, 27], layers=[6, 6, 4], channels=[8, 8, 16], small_kernel=5, device=device
     )
     model = ConvAE(vae_model=vae, conv_model=conv_model, latent_size=latent_size, patch_size=patch_size, overlap=overlap, input_size=input_size).to(
         device

@@ -106,7 +106,7 @@ def run_test(dosage, device, input_size, latent_size=16, patch_size=16, overlap=
     model_name = get_largest_model_number(f"./logs/{root_dir}", "backward")
 
     conv_model = Network(
-        input_size=input_size, large_kernel_sizes=[31, 29, 27, 13], layers=[2, 2, 4, 2], channels=[8, 8, 16, 16], small_kernel=5, device=device
+        input_size=input_size, large_kernel_sizes=[31, 29, 27], layers=[6, 6, 4], channels=[8, 8, 16], small_kernel=5, device=device
     )
     model = ConvAE(vae_model=vae, conv_model=conv_model, latent_size=latent_size, patch_size=patch_size, overlap=overlap, input_size=input_size).to(
         device
