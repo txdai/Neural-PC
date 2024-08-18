@@ -110,16 +110,16 @@ class UNet(nn.Module):
 
     def conv_block(self, in_channels, out_channels):
         return nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.Conv2d(out_channels, out_channels, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True),
         )
 
 
-def train_n2v(folder_path, device="cuda", num_epochs=10, batch_size=32, checkpoint_interval=10):
+def train_n2v(folder_path, device="cuda", num_epochs=32, batch_size=32, checkpoint_interval=10):
     dataset = N2VDataset(folder_path)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -130,7 +130,6 @@ def train_n2v(folder_path, device="cuda", num_epochs=10, batch_size=32, checkpoi
         print("Trained model found, skipping training")
         return
 
-    # Load checkpoint if exists
     start_epoch = 0
     if os.path.exists("trained_models/n2v_checkpoint.pth"):
         checkpoint = torch.load("trained_models/n2v_checkpoint.pth", map_location=device)
@@ -147,7 +146,7 @@ def train_n2v(folder_path, device="cuda", num_epochs=10, batch_size=32, checkpoi
             masked_batch, target_batch, mask_batch = masked_batch.to(device), target_batch.to(device), mask_batch.to(device)
             optimizer.zero_grad()
             output = model(masked_batch)
-            loss = ((output * mask_batch - target_batch * mask_batch) ** 2).sum() / mask_batch.sum()
+            loss = ((output * mask_batch - target_batch) ** 2).sum() / mask_batch.sum()
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
@@ -155,7 +154,6 @@ def train_n2v(folder_path, device="cuda", num_epochs=10, batch_size=32, checkpoi
 
         print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss/len(dataloader):.4f}")
 
-        # Save checkpoint
         if (epoch + 1) % checkpoint_interval == 0:
             torch.save(
                 {
@@ -168,7 +166,6 @@ def train_n2v(folder_path, device="cuda", num_epochs=10, batch_size=32, checkpoi
             )
             print(f"Checkpoint saved at epoch {epoch+1}")
 
-    # Save final model
     torch.save(model.state_dict(), "trained_models/n2v_model.pth")
 
 
